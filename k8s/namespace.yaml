@@ -1,0 +1,18 @@
+---
+### cloud-devops-chaos-engineering  : creating the namespace for your application.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chaos-engineering
+  labels:
+    env: test
+    app: cloud-devops-chaos-engineering
+    # https://kubernetes.io/docs/concepts/security/pod-security-admission/
+    # The per-mode level label indicates which policy level to apply for the mode.
+    # MODE must be one of `enforce`, `audit`, or `warn`.
+    # LEVEL must be one of `privileged`, `baseline`, or `restricted`.
+    # pod-security.kubernetes.io/<MODE>: <LEVEL>
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/enforce-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
