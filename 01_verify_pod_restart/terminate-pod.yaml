@@ -9,7 +9,7 @@ steady-state-hypothesis:
   probes:
   - name: pod-exists
     type: probe
-    tolerance: 1
+    tolerance: 2
     provider:
       type: python
       func: count_pods
@@ -17,6 +17,30 @@ steady-state-hypothesis:
       arguments:
         label_selector: app=go-cloud-k8s-info
         ns: chaos-engineering
+  - name: pod-in-phase
+    type: probe
+    tolerance: true
+    provider:
+      type: python
+      func: pods_in_phase
+      module: chaosk8s.pod.probes
+      arguments:
+        label_selector: app=go-cloud-k8s-info
+        ns: chaos-engineering
+        phase: Running
+  - name: pod-in-conditions
+    type: probe
+    tolerance: true
+    provider:
+      type: python
+      func: pods_in_conditions
+      module: chaosk8s.pod.probes
+      arguments:
+        label_selector: app=go-cloud-k8s-info
+        ns: chaos-engineering
+        conditions:
+        - type: Ready
+          status: "True"
 method:
 - type: action
   name: terminate-pod
@@ -29,4 +53,4 @@ method:
       rand: true
       ns: chaos-engineering
   pauses: 
-    after: 10
+    after: 15

@@ -1,0 +1,476 @@
+{
+  "type": "probe",
+  "name": "read_microservices_logs",
+  "mod": "chaosk8s.probes",
+  "doc": "Fetch logs for all the pods with the label `\"name\"` set to `name` and\nreturn a dictionary with the keys being the pod's name and the values\nthe logs of said pod. If `name` is not provided, use only the\n`label_selector` instead.\n\nWhen your pod has several containers, you should also set `container_name`\nto clarify which container you want to read logs from.\n\nIf you provide `last`, this returns the logs of the last N seconds\nuntil now. This can set to a fluent delta such as `10 minutes`.\n\nYou may also set `from_previous` to `True` to capture the logs of a\nprevious pod's incarnation, if any.",
+  "arguments": [
+    {
+      "name": "name",
+      "default": null,
+      "type": "string"
+    },
+    {
+      "name": "last",
+      "default": null,
+      "type": "object"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "from_previous",
+      "default": false,
+      "type": "boolean"
+    },
+    {
+      "name": "label_selector",
+      "default": "name in ({name})",
+      "type": "string"
+    },
+    {
+      "name": "container_name",
+      "default": null,
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "mapping"
+}
+{
+  "type": "probe",
+  "name": "count_min_pods",
+  "mod": "chaosk8s.pod.probes",
+  "doc": "Check if minimum number of pods are running.",
+  "arguments": [
+    {
+      "name": "label_selector",
+      "type": "string"
+    },
+    {
+      "name": "phase",
+      "default": "Running",
+      "type": "string"
+    },
+    {
+      "name": "min_count",
+      "default": 2,
+      "type": "integer"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "boolean"
+}
+{
+  "type": "probe",
+  "name": "count_pods",
+  "mod": "chaosk8s.pod.probes",
+  "doc": "Count the number of pods matching the given selector in a given `phase`, if\none is given.",
+  "arguments": [
+    {
+      "name": "label_selector",
+      "type": "string"
+    },
+    {
+      "name": "phase",
+      "default": null,
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "integer"
+}
+{
+  "type": "probe",
+  "name": "pod_is_not_available",
+  "mod": "chaosk8s.pod.probes",
+  "doc": "Lookup pods with a `name` label set to the given `name` in the specified\n`ns`.\n\nRaises :exc:`chaoslib.exceptions.ActivityFailed` when one of the pods\nwith the specified `name` is in the `\"Running\"` phase.",
+  "arguments": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "label_selector",
+      "default": "name in ({name})",
+      "type": "string"
+    },
+    {
+      "name": "raise_on_is_available",
+      "default": true,
+      "type": "boolean"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "boolean"
+}
+{
+  "type": "probe",
+  "name": "pods_in_conditions",
+  "mod": "chaosk8s.pod.probes",
+  "doc": "Lookup a pod by `label_selector` in the namespace `ns`.\n\nRaises :exc:`chaoslib.exceptions.ActivityFailed` if one of the given\nconditions type/status is not as expected unless\n`raise_on_invalid_conditions`. In that case, returns `False`.",
+  "arguments": [
+    {
+      "name": "label_selector",
+      "type": "string"
+    },
+    {
+      "name": "conditions",
+      "type": "list"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "raise_on_invalid_conditions",
+      "default": true,
+      "type": "boolean"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "boolean"
+}
+{
+  "type": "probe",
+  "name": "pods_in_phase",
+  "mod": "chaosk8s.pod.probes",
+  "doc": "Lookup a pod by `label_selector` in the namespace `ns`.\n\nRaises :exc:`chaoslib.exceptions.ActivityFailed` when the state is not\nas expected unless `raise_on_invalid_phase`. In that case, returns `False`.",
+  "arguments": [
+    {
+      "name": "label_selector",
+      "type": "string"
+    },
+    {
+      "name": "phase",
+      "default": "Running",
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "raise_on_invalid_phase",
+      "default": true,
+      "type": "boolean"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "boolean"
+}
+{
+  "type": "probe",
+  "name": "pods_not_in_phase",
+  "mod": "chaosk8s.pod.probes",
+  "doc": "Lookup a pod by `label_selector` in the namespace `ns`.\n\nRaises :exc:`chaoslib.exceptions.ActivityFailed` when the pod is in the\ngiven phase and should not have, unless\n`raise_on_in_phase`. In that case, returns `False`.",
+  "arguments": [
+    {
+      "name": "label_selector",
+      "type": "string"
+    },
+    {
+      "name": "phase",
+      "default": "Running",
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "raise_on_in_phase",
+      "default": true,
+      "type": "boolean"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "boolean"
+}
+{
+  "type": "probe",
+  "name": "read_pod_logs",
+  "mod": "chaosk8s.pod.probes",
+  "doc": "Fetch logs for all the pods with the label `\"name\"` set to `name` and\nreturn a dictionary with the keys being the pod's name and the values\nthe logs of said pod. If `name` is not provided, use only the\n`label_selector` instead.\n\nWhen your pod has several containers, you should also set `container_name`\nto clarify which container you want to read logs from.\n\nIf you provide `last`, this returns the logs of the last N seconds\nuntil now. This can set to a fluent delta such as `10 minutes`.\n\nYou may also set `from_previous` to `True` to capture the logs of a\nprevious pod's incarnation, if any.",
+  "arguments": [
+    {
+      "name": "name",
+      "default": null,
+      "type": "string"
+    },
+    {
+      "name": "last",
+      "default": null,
+      "type": "object"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "from_previous",
+      "default": false,
+      "type": "boolean"
+    },
+    {
+      "name": "label_selector",
+      "default": "name in ({name})",
+      "type": "string"
+    },
+    {
+      "name": "container_name",
+      "default": null,
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "mapping"
+}
+{
+  "type": "probe",
+  "name": "statefulset_fully_available",
+  "mod": "chaosk8s.statefulset.probes",
+  "doc": "Wait until all the statefulSet expected replicas are available.\nOnce this state is reached, return `True`.\nIf the state is not reached after `timeout` seconds, a\n:exc:`chaoslib.exceptions.ActivityFailed` exception is raised.\n\nIf `raise_on_not_fully_available` is set to `False`, return `False` instead\nof raising the exception.",
+  "arguments": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "label_selector",
+      "default": null,
+      "type": "string"
+    },
+    {
+      "name": "timeout",
+      "default": 30,
+      "type": "integer"
+    },
+    {
+      "name": "raise_on_not_fully_available",
+      "default": true,
+      "type": "boolean"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ]
+}
+{
+  "type": "probe",
+  "name": "statefulset_not_fully_available",
+  "mod": "chaosk8s.statefulset.probes",
+  "doc": "Wait until the statefulSet gets into an intermediate state where not all\nexpected replicas are available. Once this state is reached, return `True`.\nIf the state is not reached after `timeout` seconds, a\n:exc:`chaoslib.exceptions.ActivityFailed` exception is raised.\n\nIf `raise_on_fully_available` is set to `False`, return `False` instead\nof raising the exception.",
+  "arguments": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "label_selector",
+      "default": null,
+      "type": "string"
+    },
+    {
+      "name": "timeout",
+      "default": 30,
+      "type": "integer"
+    },
+    {
+      "name": "raise_on_fully_available",
+      "default": true,
+      "type": "boolean"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ]
+}
+{
+  "type": "probe",
+  "name": "get_cluster_custom_object",
+  "mod": "chaosk8s.crd.probes",
+  "doc": "Get a custom object cluster-wide.\n\nRead more about custom resources here:\nhttps://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/",
+  "arguments": [
+    {
+      "name": "group",
+      "type": "string"
+    },
+    {
+      "name": "version",
+      "type": "string"
+    },
+    {
+      "name": "plural",
+      "type": "string"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "mapping"
+}
+{
+  "type": "probe",
+  "name": "get_custom_object",
+  "mod": "chaosk8s.crd.probes",
+  "doc": "Get a custom object in the given namespace.\n\nRead more about custom resources here:\nhttps://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/",
+  "arguments": [
+    {
+      "name": "group",
+      "type": "string"
+    },
+    {
+      "name": "version",
+      "type": "string"
+    },
+    {
+      "name": "plural",
+      "type": "string"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "mapping"
+}
+{
+  "type": "probe",
+  "name": "list_cluster_custom_objects",
+  "mod": "chaosk8s.crd.probes",
+  "doc": "List custom objects cluster-wide.\n\nRead more about custom resources here:\nhttps://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/",
+  "arguments": [
+    {
+      "name": "group",
+      "type": "string"
+    },
+    {
+      "name": "version",
+      "type": "string"
+    },
+    {
+      "name": "plural",
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "list"
+}
+{
+  "type": "probe",
+  "name": "list_custom_objects",
+  "mod": "chaosk8s.crd.probes",
+  "doc": "List custom objects in the given namespace.\n\nRead more about custom resources here:\nhttps://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/",
+  "arguments": [
+    {
+      "name": "group",
+      "type": "string"
+    },
+    {
+      "name": "version",
+      "type": "string"
+    },
+    {
+      "name": "plural",
+      "type": "string"
+    },
+    {
+      "name": "ns",
+      "default": "default",
+      "type": "string"
+    },
+    {
+      "name": "secrets",
+      "default": null,
+      "type": "mapping"
+    }
+  ],
+  "return_type": "list"
+}
