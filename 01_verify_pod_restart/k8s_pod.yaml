@@ -1,0 +1,71 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: go-cloud-k8s-info           # Name of the Kubernetes resource
+  namespace: chaos-engineering
+  labels:
+    app: go-cloud-k8s-info
+spec:
+  containers:
+  - name: go-cloud-k8s-info
+    image: ghcr.io/lao-tseu-is-alive/go-cloud-k8s-info:v0.4.11
+    imagePullPolicy: Always
+    securityContext:
+      seccompProfile:
+        type: RuntimeDefault   # https://kubernetes.io/docs/tutorials/security/seccomp/
+      allowPrivilegeEscalation: false
+      runAsNonRoot: true
+      runAsUser: 12121           # using the user 'gouser' created in Dockerfile
+      runAsGroup: 12121          # using the group 'gouser' created in Dockerfile
+      capabilities:
+        drop:
+          - 'ALL'
+      readOnlyRootFilesystem: true
+    ports:
+      - containerPort: 8000  # Should match the PORT env variable above  that the Go application listens on
+    resources:
+      limits: # resource limit imposed to the pod, the container cannot utilize more res than specified
+        cpu: 1000m       # 1000 millicpu or millicores 1 or 100% of a CPU core of a running node
+        memory: 128Mi
+      requests: # explicit request of the minimum amount of resources the pod need
+        cpu: 100m        # 100 millicpu or millicores 0.1 or 10% of a CPU core of a running node
+        memory: 32Mi
+    livenessProbe: # To check the health of the Pod
+      httpGet:
+        path: /health
+        port: 8000
+        scheme: HTTP
+      initialDelaySeconds: 5
+      periodSeconds: 15
+      timeoutSeconds: 2
+    readinessProbe: # To check if the Pod is ready to serve traffic or not
+      httpGet:
+        path: /readiness
+        port: 8000
+        scheme: HTTP
+      initialDelaySeconds: 5
+      timeoutSeconds: 2
+    env:
+      - name: PORT
+        value: "8000"
+      - name: MY_NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+      - name: MY_POD_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.name
+      - name: MY_POD_NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: MY_POD_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
+      - name: MY_POD_SERVICE_ACCOUNT
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.serviceAccountName
