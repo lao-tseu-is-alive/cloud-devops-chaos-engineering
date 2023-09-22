@@ -34,3 +34,18 @@ we will create a dedicated k8s namespace :   *chaos-engineering*
 List of available actions that are not deprecated :
 
     cat discovery.json |jq '.activities[] | select(.doc | contains("!!!DEPRECATED!!!") | not) | select(.type | contains("action")) | .name + " : " + .doc[:80] + "..."  '
+
+
+##### Install Istio and chaostoolkit-istio extension
+
+	pip install -U chaostoolkit-istio
+	chaos info extensions
+ 	chaos discover chaostoolkit-istio
+	mv discovery.json discovery_chaostoolkit-istio.json 
+
+
+List of available actions in this istio plugins :
+
+	cat discovery_chaostoolkit-istio.json |jq '.activities[] | select(.doc | contains("!!!DEPRECATED!!!") | not) | select(.type | contains("action")) | .name + " : " + .doc[:80] + "..."  '
+
+

@@ -1,8 +1,8 @@
 {
   "chaoslib_version": "1.39.0",
-  "id": "4e5477c7-dbd6-4468-a9b7-0159d8973b34",
+  "id": "77e53611-cb97-4e16-a70f-4d9a503eba51",
   "target": "kubernetes",
-  "date": "2023-09-20T14:59:58.348864Z",
+  "date": "2023-09-22T14:31:35.623503Z",
   "platform": {
     "system": "Linux",
     "node": "pulsar",
@@ -14,7 +14,7 @@
   },
   "extension": {
     "name": "chaostoolkit-kubernetes",
-    "version": "0.28.0"
+    "version": "0.30.0"
   },
   "activities": [
     {
@@ -299,6 +299,35 @@
     },
     {
       "type": "probe",
+      "name": "secret_exists",
+      "mod": "chaosk8s.probes",
+      "doc": "Lookup a secret by its name and returns False when\nthe secret was not found.",
+      "arguments": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "label_selector",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "probe",
       "name": "service_endpoint_is_initialized",
       "mod": "chaosk8s.probes",
       "doc": "!!!DEPRECATED!!!",
@@ -323,6 +352,204 @@
           "type": "mapping"
         }
       ]
+    },
+    {
+      "type": "action",
+      "name": "create_daemon_set",
+      "mod": "chaosk8s.daemonset.actions",
+      "doc": "Create a daemon set described by the daemon set spec, which must be the\npath to the JSON or YAML representation of the daemon_set.",
+      "arguments": [
+        {
+          "name": "spec_path",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "delete_daemon_set",
+      "mod": "chaosk8s.daemonset.actions",
+      "doc": "Delete a daemon set by `name` or `label_selector` in the namespace `ns`.\n\nThe daemon set is deleted without a graceful period to trigger an abrupt\ntermination.\n\nIf neither `name` nor `label_selector` is specified, all the daemon sets\nwill be deleted in the namespace.",
+      "arguments": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "label_selector",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "update_daemon_set",
+      "mod": "chaosk8s.daemonset.actions",
+      "doc": "Update the specification of the targeted daemon set according to spec.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "spec",
+          "type": "mapping"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "daemon_set_available_and_healthy",
+      "mod": "chaosk8s.daemonset.probes",
+      "doc": "Lookup a daemon set by `name` in the namespace `ns`.\n\nThe selected resources are matched by the given `label_selector`.\n\nReturn `True` if daemon set is available, otherwise `False`.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "label_selector",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
+      "name": "daemon_set_fully_available",
+      "mod": "chaosk8s.daemonset.probes",
+      "doc": "Wait until all the daemon set expected replicas are available.\nOnce this state is reached, return `True`.\nIf the state is not reached after `timeout` seconds, return `False`",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "label_selector",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "timeout",
+          "default": 30,
+          "type": "integer"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
+      "name": "daemon_set_not_fully_available",
+      "mod": "chaosk8s.daemonset.probes",
+      "doc": "Wait until the daemon set gets into an intermediate state where not all\nexpected replicas are available. Once this state is reached, return `True`.\nIf the state is not reached after `timeout` seconds, return `False`.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "label_selector",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "timeout",
+          "default": 30,
+          "type": "integer"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
+      "name": "daemon_set_partially_available",
+      "mod": "chaosk8s.daemonset.probes",
+      "doc": "Check whether if the given daemon set state is ready or at-least partially\nready. Return `True` if dameon set is partially available, otherwise `False`",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "label_selector",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
     },
     {
       "type": "action",
@@ -567,6 +794,330 @@
     },
     {
       "type": "action",
+      "name": "create_namespace",
+      "mod": "chaosk8s.namespace.actions",
+      "doc": "Create a namespace from the specified spec_path, which must be\nthe path to the JSON or YAML representation of the namespace.",
+      "arguments": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "spec_path",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "delete_namespace",
+      "mod": "chaosk8s.namespace.actions",
+      "doc": "Remove the given namespace",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "namespace_exists",
+      "mod": "chaosk8s.namespace.probes",
+      "doc": "Lookup a namespace by its name and returns False when\nthe namespace was not found.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
+      "name": "allow_dns_access",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Convenient helper rule to DNS access from all pods\nin a namespace, unless `label_selectors, in which case, only matching pods\nwill be impacted.",
+      "arguments": [
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "create_ingress",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Create an ingress object from the specified spec_path, which must be\nthe path to the JSON or YAML representation of the ingress.",
+      "arguments": [
+        {
+          "name": "spec_path",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "create_network_policy",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Create a network policy in the given namespace eitehr from the definition\nas `spec` or from a file containing the definition at `spec_path`.",
+      "arguments": [
+        {
+          "name": "spec",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "spec_path",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "delete_ingress",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Remove the given ingress",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "deny_all_egress",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Convenient helper rule to deny all egress network from all pods in a\nnamespace, unless `label_selectors, in which case, only matching pods will\nbe impacted.",
+      "arguments": [
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "deny_all_ingress",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Convenient helper policy to deny ingress network to all pods in a\nnamespace, unless `label_selectors, in which case, only matching pods will\nbe impacted.",
+      "arguments": [
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "mapping"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "remove_allow_dns_access",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Remove the rule set by the `allow_dns_access` action.",
+      "arguments": [
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "remove_deny_all_egress",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Remove the rule set by the `deny_all_egress` action.",
+      "arguments": [
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "remove_deny_all_ingress",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Remove the rule set by the `deny_all_ingress` action.",
+      "arguments": [
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "remove_network_policy",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Create a network policy in the given namespace eitehr from the definition\nas `spec` or from a file containing the definition at `spec_path`.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "update_ingress",
+      "mod": "chaosk8s.networking.actions",
+      "doc": "Update the specification of the targeted ingress according to spec.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "spec",
+          "type": "mapping"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "ingress_exists",
+      "mod": "chaosk8s.networking.probes",
+      "doc": "Lookup a ingress by its name and returns False when\nthe ingress was not found.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
       "name": "cordon_node",
       "mod": "chaosk8s.node.actions",
       "doc": "Cordon nodes matching the given label or name, so that no pods\nare scheduled on them any longer.",
@@ -759,7 +1310,7 @@
       "type": "action",
       "name": "exec_in_pods",
       "mod": "chaosk8s.pod.actions",
-      "doc": "Execute the command `cmd` in the specified pod's container.\nSelect the appropriate pods by label and/or name patterns.\nWhenever a pattern is provided for the name, all pods retrieved will be\nfiltered out if their name do not match the given pattern.\n\nIf neither `label_selector` nor `name_pattern` are provided, all pods\nin the namespace will be selected for termination.\n\nIf `all` is set to `True`, all matching pods will be affected.\n\nValue of `qty` varies based on `mode`.\nIf `mode` is set to `fixed`, then `qty` refers to number of pods affected.\nIf `mode` is set to `percentage`, then `qty` refers to\npercentage of pods, from 1 to 100, to be affected.\nDefault `mode` is `fixed` and default `qty` is `1`.\n\nIf `order` is set to `oldest`, the retrieved pods will be ordered\nby the pods creation_timestamp, with the oldest pod first in list.\n\nIf `rand` is set to `True`, n random pods will be affected\nOtherwise, the first retrieved n pods will be used\n\nThe `cmd` should be a string or a sequence of program arguments. Providing\na sequence of arguments is generally preferred, as it allows the action to\ntake care of any required escaping and quoting (e.g. to permit spaces in the\narguments). If passing a single string it will be split automatically.",
+      "doc": "Execute the command `cmd` in the specified pod's container.\nSelect the appropriate pods by label and/or name patterns.\nWhenever a pattern is provided for the name, all pods retrieved will be\nfiltered out if their name do not match the given pattern.\n\nIf neither `label_selector` nor `name_pattern` are provided, all pods\nin the namespace will be selected to execute the command.\n\nIf `all` is set to `True`, all matching pods will be affected.\n\nValue of `qty` varies based on `mode`.\nIf `mode` is set to `fixed`, then `qty` refers to number of pods affected.\nIf `mode` is set to `percentage`, then `qty` refers to\npercentage of pods, from 1 to 100, to be affected.\nDefault `mode` is `fixed` and default `qty` is `1`.\n\nIf `order` is set to `oldest`, the retrieved pods will be ordered\nby the pods creation_timestamp, with the oldest pod first in list.\n\nIf `rand` is set to `True`, n random pods will be affected\nOtherwise, the first retrieved n pods will be used\n\nThe `cmd` should be a string or a sequence of program arguments. Providing\na sequence of arguments is generally preferred, as it allows the action to\ntake care of any required escaping and quoting (e.g. to permit spaces in the\narguments). If passing a single string it will be split automatically.",
       "arguments": [
         {
           "name": "cmd",
@@ -1225,6 +1776,79 @@
     },
     {
       "type": "action",
+      "name": "create_secret",
+      "mod": "chaosk8s.secret.actions",
+      "doc": "Create a secret endpoint described by the secret config, which must be\nthe path to the JSON or YAML representation of the secret.",
+      "arguments": [
+        {
+          "name": "spec_path",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "delete_secret",
+      "mod": "chaosk8s.secret.actions",
+      "doc": "Remove the given secret",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ]
+    },
+    {
+      "type": "action",
+      "name": "secret_exists",
+      "mod": "chaosk8s.secret.probes",
+      "doc": "Lookup a secret by its name and returns False when\nthe secret was not found.",
+      "arguments": [
+        {
+          "name": "name",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "label_selector",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "boolean"
+    },
+    {
+      "type": "action",
       "name": "create_statefulset",
       "mod": "chaosk8s.statefulset.actions",
       "doc": "Create a statefulset described by the service config, which must be\nthe path to the JSON or YAML representation of the statefulset.",
@@ -1372,6 +1996,44 @@
           "type": "mapping"
         }
       ]
+    },
+    {
+      "type": "action",
+      "name": "apply_from_json",
+      "mod": "chaosk8s.crd.actions",
+      "doc": "Apply the given custom resource, given as a JSON string, to the cluster.",
+      "arguments": [
+        {
+          "name": "resource",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "apply_from_yaml",
+      "mod": "chaosk8s.crd.actions",
+      "doc": "Apply the given custom resource, given as a YAML string, to the cluster.",
+      "arguments": [
+        {
+          "name": "resource",
+          "default": null,
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
     },
     {
       "type": "action",
@@ -1826,6 +2488,700 @@
         }
       ],
       "return_type": "list"
+    },
+    {
+      "type": "action",
+      "name": "add_latency",
+      "mod": "chaosk8s.chaosmesh.network.actions",
+      "doc": "Set network delay on a pod.\n\nSee: https://chaos-mesh.org/docs/simulate-network-chaos-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "latency",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "correlation",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "jitter",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "corrupt_packets",
+      "mod": "chaosk8s.chaosmesh.network.actions",
+      "doc": "Corrupt network packets on a pod.\n\nSee: https://chaos-mesh.org/docs/simulate-network-chaos-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "corrupt",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "correlation",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_network_fault",
+      "mod": "chaosk8s.chaosmesh.network.actions",
+      "doc": "Remove a Chaos Mesh network fault.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "duplicate_packets",
+      "mod": "chaosk8s.chaosmesh.network.actions",
+      "doc": "Duplicate network packets on a pod.\n\nSee: https://chaos-mesh.org/docs/simulate-network-chaos-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "duplicate",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "correlation",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "reorder_packets",
+      "mod": "chaosk8s.chaosmesh.network.actions",
+      "doc": "Reorder network packets on a pod.\n\nSee: https://chaos-mesh.org/docs/simulate-network-chaos-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "reorder",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "correlation",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "gap",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "set_bandwidth",
+      "mod": "chaosk8s.chaosmesh.network.actions",
+      "doc": "Simulate bandwdith on a pod.\n\nSee: https://chaos-mesh.org/docs/simulate-network-chaos-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "rate",
+          "type": "string"
+        },
+        {
+          "name": "limit",
+          "type": "integer"
+        },
+        {
+          "name": "buffer",
+          "type": "integer"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "peakrate",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "minburst",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "set_loss",
+      "mod": "chaosk8s.chaosmesh.network.actions",
+      "doc": "Set network loss on a pod.\n\nSee: https://chaos-mesh.org/docs/simulate-network-chaos-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "loss",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "correlation",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "delete_stressor",
+      "mod": "chaosk8s.chaosmesh.stress.actions",
+      "doc": "Remove a Chaos Mesh stressor.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "stress_cpu",
+      "mod": "chaosk8s.chaosmesh.stress.actions",
+      "doc": "Stress the CPU to impact a process/container.\n\nSee: https://chaos-mesh.org/docs/simulate-heavy-stress-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "workers",
+          "type": "integer"
+        },
+        {
+          "name": "load",
+          "type": "integer"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "duration",
+          "default": "30s",
+          "type": "string"
+        },
+        {
+          "name": "container_names",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "stressng_stressors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "action",
+      "name": "stress_memory",
+      "mod": "chaosk8s.chaosmesh.stress.actions",
+      "doc": "Stress the CPU to impact a process/container.\n\nSee: https://chaos-mesh.org/docs/simulate-heavy-stress-on-kubernetes/",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "workers",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "size",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "oom_score",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "time_to_get_to_size",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "namespaces_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "label_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "annotations_selectors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "mode",
+          "default": "one",
+          "type": "string"
+        },
+        {
+          "name": "mode_value",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "direction",
+          "default": "to",
+          "type": "string"
+        },
+        {
+          "name": "duration",
+          "default": "30s",
+          "type": "string"
+        },
+        {
+          "name": "container_names",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "stressng_stressors",
+          "default": null,
+          "type": "object"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "get_network_fault",
+      "mod": "chaosk8s.chaosmesh.network.probes",
+      "doc": "Get a specific Chaos Mesh network fault.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "get_network_faults",
+      "mod": "chaosk8s.chaosmesh.network.probes",
+      "doc": "List all Chaos Mesh network faults.",
+      "arguments": [
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "get_stressor",
+      "mod": "chaosk8s.chaosmesh.stress.probes",
+      "doc": "Get a specific Chaos Mesh CPU/memory stressor.",
+      "arguments": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
+    },
+    {
+      "type": "probe",
+      "name": "get_stressors",
+      "mod": "chaosk8s.chaosmesh.stress.probes",
+      "doc": "List all Chaos Mesh network CPU/memory stressors.",
+      "arguments": [
+        {
+          "name": "ns",
+          "default": "default",
+          "type": "string"
+        },
+        {
+          "name": "secrets",
+          "default": null,
+          "type": "mapping"
+        }
+      ],
+      "return_type": "mapping"
     }
   ],
   "system": null
